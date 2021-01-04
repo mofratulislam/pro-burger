@@ -41,8 +41,13 @@ export const orderLoadFailed = () => {
     }
 }
 
-export const fetchOrders = () => dispatch => {
-    axios.get("https://pro-burger-b62b1.firebaseio.com/orders.json")
+export const fetchOrders = (token, userId) => dispatch => {
+    const header = {
+        header:{
+            "Authorization": "Bearer " + token
+        }
+    }
+    axios.get(`http://127.0.0.1:8000/api/order?id=${userId}`, header)
         .then(response => {
             dispatch(loadOrders(response.data));
         })

@@ -12,6 +12,8 @@ const mapStateToProps = state => {
         ingredients: state.ingredients,
         totalPrice: state.totalPrice,
         purchasable: state.purchasable,
+        userId: state.userId,
+        token: state.token,
     }
 }
 
@@ -48,15 +50,29 @@ class Checkout extends Component {
 
     submitHandler = () => {
         this.setState({ isLoading: true });
+        const ingredients = [...this.props.ingredients];
+        const ingredientObj = {};
+        for (let i of ingredients) {
+            ingredientObj[i.type] = i.amount;
+        }
         const order = {
-            ingredients: this.props.ingredients,
+            ingredients: ingredientObj,
             customer: this.state.values,
             price: this.props.totalPrice,
             orderTime: new Date(),
+            user: this.props.userId,
         }
-        axios.post("https://pro-burger-b62b1.firebaseio.com/orders.json", order)
+        //console.log(order);
+        const header = {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + this.props.token
+            }
+        }
+        axios.post("http://127.0.0.1:8000/api/order/", order, header)
             .then(response => {
-                if (response.status === 200) {
+                //console.log(response);
+                if (response.status === 201) {
                     this.setState({
                         isLoading: false,
                         isModalOpen: true,
